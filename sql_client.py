@@ -59,12 +59,16 @@ class SqlClient:
         if commit:
             self.cnxn.commit()
 
+    def __repr__(self):
+        return f"server_name: {self.server_name}\n" \
+               f"database_name: {self.database_name}\n" \
+               f"username: {self.username}\n" \
+               f"password: {self.password}\n"
+
 
 if __name__ == '__main__':
-    server_name = "teamseven.ct4lx0aqwcg9.ca-central-1.rds.amazonaws.com"
-    database_name = "demodata"
-    username = "admin"
-    password = "jXGiWT5FqVTyMQHXa74c"
-    s = SqlClient(server_name, database_name, username, password)
-    # s.upload_csv("physionet.org/files/mimiciii-demo/1.4/NOTEEVENTS.csv", "NOTEEVENTS")
-    s.upload_csv_directory("physionet.org/files/mimiciii-demo/1.4/")
+    SERVER_NAME = "teamseven.ct4lx0aqwcg9.ca-central-1.rds.amazonaws.com"
+    DATABASE_NAME = "demodata"
+    USERNAME = "admin"
+    PASSWORD = "jXGiWT5FqVTyMQHXa74c"
+    s = SqlClient(SERVER_NAME, DATABASE_NAME, USERNAME, PASSWORD)
