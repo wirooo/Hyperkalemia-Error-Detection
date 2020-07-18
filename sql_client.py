@@ -53,7 +53,6 @@ class SqlClient:
 
         :param command: SQL command to execute
         :param commit: whether to commit changes to SQL
-        :return:
         """
         self.cursor.execute(command)
         if commit:
