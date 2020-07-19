@@ -89,3 +89,5 @@ if __name__ == '__main__':
     USERNAME = "admin"
     PASSWORD = "jXGiWT5FqVTyMQHXa74c"
     s = SqlClient(SERVER_NAME, DATABASE_NAME, USERNAME, PASSWORD)
+    df = s.select('ADMISSIONS')
+    print(df)
