@@ -64,6 +64,24 @@ class SqlClient:
                f"username: {self.username}\n" \
                f"password: {self.password}\n"
 
+    def select(self, table_name="", select="*", where="", command=""):
+        """
+        Retrieve data from specified table as pandas dataframe
+        If command is empty, uses table_name, select, and where to create command, else executes command
+            ignoring other parameters
+
+        :param table_name: name of SQL table to get
+        :param select: what to use in select statement (ex. "*",  "TOP 5 *")
+        :param where: what to use in where statement (ex. "id=5")
+        :param command: command to execute when getting SQL table
+        :return: pandas dataframe of SQL table
+        """
+        if command:
+            return pd.read_sql(command, self.engine)
+        else:
+            return pd.read_sql(f"select {select} from {table_name} {'' if not where else f'where {where}'}",
+                               self.engine)
+
 
 if __name__ == '__main__':
     SERVER_NAME = "teamseven.ct4lx0aqwcg9.ca-central-1.rds.amazonaws.com"
