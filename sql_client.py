@@ -24,28 +24,44 @@ class SqlClient:
         self.engine = sqlalchemy.create_engine(
             f"mssql+pyodbc:///?odbc_connect={urllib.parse.quote_plus(params)}")
 
-    def upload_csv(self, path_to_csv, table_name):
+    def upload_df(self, df, table_name, if_exists='replace', index=False):
+        """
+        Calls pandas default to_sql function to upload pandas df to sql server
+
+        :param df: Pandas df to upload
+        :param table_name: Table name in SQL server
+        :param if_exists: behavior if table already exists (e.g. 'replace', 'append')
+        :param index: whether to include the first column of df
+        """
+        df.to_sql(table_name, self.engine, if_exists=if_exists, index=index)
+
+    def upload_csv(self, path_to_csv, table_name, if_exists='replace', index=False):
         """
         Uploads csv to SQL server using pandas
 
         :param path_to_csv: string of csv file path
         :param table_name: name of table in SQL
+        :param if_exists: behavior if table already exists (e.g. 'replace', 'append')
+        :param index: whether to include the first column of df
         """
         df = pd.read_csv(path_to_csv)
-        df.to_sql(table_name, self.engine, if_exists='replace', index=False)
+        df.to_sql(table_name, self.engine, if_exists=if_exists, index=index)
 
-    def upload_csv_directory(self, path_to_directory):
+    def upload_csv_directory(self, path_to_directory, if_exists='replace', index=False):
         """
         Uploads all .csv files in given directory to SQL server using pandas
         Assigns SQL name identical to file name less ".csv"
 
         :param path_to_directory: string of directory path
+        :param if_exists: behavior if table already exists (e.g. 'replace', 'append')
+        :param index: whether to include the first column of df
         """
         for file in os.listdir(path_to_directory):
             filename = os.fsdecode(file)
             if filename.endswith('.csv'):
                 print(filename)
-                self.upload_csv(os.path.join(path_to_directory, filename), filename[:-4])
+                self.upload_csv(os.path.join(path_to_directory, filename), filename[:-4],
+                                if_exists=if_exists, index=index)
 
     def execute(self, command, commit=True):
         """
@@ -79,7 +95,7 @@ class SqlClient:
         if command:
             return pd.read_sql(command, self.engine)
         else:
-            return pd.read_sql(f"select top 100 {select} from {table_name} {'' if not where else f'where {where}'}",
+            return pd.read_sql(f"select {select} from {table_name} {'' if not where else f'where {where}'}",
                                self.engine)
 
 
@@ -89,8 +105,5 @@ if __name__ == '__main__':
     USERNAME = "admin"
     PASSWORD = "jXGiWT5FqVTyMQHXa74c"
     s = SqlClient(SERVER_NAME, DATABASE_NAME, USERNAME, PASSWORD)
-    df = s.select('diagnosis', select="patientunitstayid, icd9code")
+    df = s.select('diagnosis', select="*")
     print(df)
-    df['icd9code'].fillna("No Code", inplace=True)
-    squashed = df.groupby(df['patientunitstayid']).aggregate(lambda d: ';'.join(d))
-    print(squashed)
