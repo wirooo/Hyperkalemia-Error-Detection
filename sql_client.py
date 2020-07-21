@@ -27,6 +27,7 @@ class SqlClient:
     def upload_csv(self, path_to_csv, table_name):
         """
         Uploads csv to SQL server using pandas
+        Warning: uploading large files (> 1 MB) is very slow -> use SQL Server Management Studio instead
 
         :param path_to_csv: string of csv file path
         :param table_name: name of table in SQL
@@ -38,6 +39,7 @@ class SqlClient:
         """
         Uploads all .csv files in given directory to SQL server using pandas
         Assigns SQL name identical to file name less ".csv"
+        Warning: uploading large files (> 1 MB) is very slow -> use SQL Server Management Studio instead
 
         :param path_to_directory: string of directory path
         """
