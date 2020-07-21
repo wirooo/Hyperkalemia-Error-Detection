@@ -79,15 +79,18 @@ class SqlClient:
         if command:
             return pd.read_sql(command, self.engine)
         else:
-            return pd.read_sql(f"select {select} from {table_name} {'' if not where else f'where {where}'}",
+            return pd.read_sql(f"select top 100 {select} from {table_name} {'' if not where else f'where {where}'}",
                                self.engine)
 
 
 if __name__ == '__main__':
     SERVER_NAME = "teamseven.ct4lx0aqwcg9.ca-central-1.rds.amazonaws.com"
-    DATABASE_NAME = "demodata"
+    DATABASE_NAME = "eicu_demo"
     USERNAME = "admin"
     PASSWORD = "jXGiWT5FqVTyMQHXa74c"
     s = SqlClient(SERVER_NAME, DATABASE_NAME, USERNAME, PASSWORD)
-    df = s.select('ADMISSIONS')
+    df = s.select('diagnosis', select="patientunitstayid, icd9code")
     print(df)
+    df['icd9code'].fillna("No Code", inplace=True)
+    squashed = df.groupby(df['patientunitstayid']).aggregate(lambda d: ';'.join(d))
+    print(squashed)
