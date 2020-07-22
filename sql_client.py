@@ -101,6 +101,10 @@ class SqlClient:
             return pd.read_sql(f"select {select} from {table_name} {'' if not where else f'where {where}'}",
                                self.engine)
 
+    def select_join(self, table1, table2, join_type, on, select="*", where=""):
+        return pd.read_sql(f"select top 2000 {select} from {table1} {join_type} join {table2} on {on}"
+                           f" {'' if not where else f'where {where}'}", self.engine)
+
 
 if __name__ == '__main__':
     SERVER_NAME = "teamseven.ct4lx0aqwcg9.ca-central-1.rds.amazonaws.com"
@@ -108,5 +112,5 @@ if __name__ == '__main__':
     USERNAME = "admin"
     PASSWORD = "jXGiWT5FqVTyMQHXa74c"
     s = SqlClient(SERVER_NAME, DATABASE_NAME, USERNAME, PASSWORD)
-    df = s.select('diagnosis')
+    df = s.select_join("diagnosis", "lab", "inner", "diagnosis.patientunitstayid = lab.patientunitstayid")
     print(df)
