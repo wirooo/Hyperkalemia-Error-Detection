@@ -15,6 +15,25 @@ def aggregate_common_rows(df, common_col, func, null_replace):
         df[col].fillna(null_replace[col], inplace=True)
     return df.groupby(df[common_col]).aggregate(func)
 
+
+def reformatLab(df):
+    """
+    Organizes lab.csv from eICU database
+
+    :param df: Pandas df of lab.csv
+    """
+    
+    del df['labid']
+    del df['labtypeid']
+    del df['labresulttext']
+    del df['labmeasurenameinterface']
+    del df['labresultrevisedoffset']
+    res = df.pivot_table(index=['patientunitstayid', 'labresultoffset'], 
+                        columns='labname' )
+    res.reset_index(inplace=True)
+    # res.to_csv('test.csv')
+    return res
+
 if __name__ == '__main__':
     SERVER_NAME = "teamseven.ct4lx0aqwcg9.ca-central-1.rds.amazonaws.com"
     DATABASE_NAME = "eicu_demo"
