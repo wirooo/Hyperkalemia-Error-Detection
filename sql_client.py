@@ -4,6 +4,7 @@ import sqlalchemy
 import urllib
 import os
 
+
 class SqlClient:
     """
     A class that interfaces with an MS SQL Server using pyodbc and sqlalchemy
@@ -107,5 +108,5 @@ if __name__ == '__main__':
     USERNAME = "admin"
     PASSWORD = "jXGiWT5FqVTyMQHXa74c"
     s = SqlClient(SERVER_NAME, DATABASE_NAME, USERNAME, PASSWORD)
-    df = s.select('diagnosis', select="*")
+    df = s.select('diagnosis')
     print(df)
