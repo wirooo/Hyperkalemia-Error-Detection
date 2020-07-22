@@ -4,6 +4,7 @@ import sqlalchemy
 import urllib
 import os
 
+
 class SqlClient:
     """
     A class that interfaces with an MS SQL Server using pyodbc and sqlalchemy
@@ -24,28 +25,46 @@ class SqlClient:
         self.engine = sqlalchemy.create_engine(
             f"mssql+pyodbc:///?odbc_connect={urllib.parse.quote_plus(params)}")
 
-    def upload_csv(self, path_to_csv, table_name):
+    def upload_df(self, df, table_name, if_exists='replace', index=False):
+        """
+        Calls pandas default to_sql function to upload pandas df to sql server
+
+        :param df: Pandas df to upload
+        :param table_name: Table name in SQL server
+        :param if_exists: behavior if table already exists (e.g. 'replace', 'append')
+        :param index: whether to include the first column of df
+        """
+        df.to_sql(table_name, self.engine, if_exists=if_exists, index=index)
+
+    def upload_csv(self, path_to_csv, table_name, if_exists='replace', index=False):
         """
         Uploads csv to SQL server using pandas
+        Warning: uploading large files (> 1 MB) is very slow -> use SQL Server Management Studio instead
 
         :param path_to_csv: string of csv file path
         :param table_name: name of table in SQL
+        :param if_exists: behavior if table already exists (e.g. 'replace', 'append')
+        :param index: whether to include the first column of df
         """
         df = pd.read_csv(path_to_csv)
-        df.to_sql(table_name, self.engine, if_exists='replace', index=False)
+        df.to_sql(table_name, self.engine, if_exists=if_exists, index=index)
 
-    def upload_csv_directory(self, path_to_directory):
+    def upload_csv_directory(self, path_to_directory, if_exists='replace', index=False):
         """
         Uploads all .csv files in given directory to SQL server using pandas
         Assigns SQL name identical to file name less ".csv"
+        Warning: uploading large files (> 1 MB) is very slow -> use SQL Server Management Studio instead
 
         :param path_to_directory: string of directory path
+        :param if_exists: behavior if table already exists (e.g. 'replace', 'append')
+        :param index: whether to include the first column of df
         """
         for file in os.listdir(path_to_directory):
             filename = os.fsdecode(file)
             if filename.endswith('.csv'):
                 print(filename)
-                self.upload_csv(os.path.join(path_to_directory, filename), filename[:-4])
+                self.upload_csv(os.path.join(path_to_directory, filename), filename[:-4],
+                                if_exists=if_exists, index=index)
 
     def execute(self, command, commit=True):
         """
