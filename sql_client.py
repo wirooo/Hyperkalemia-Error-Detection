@@ -105,7 +105,7 @@ if __name__ == '__main__':
     SERVER_NAME = "teamseven.ct4lx0aqwcg9.ca-central-1.rds.amazonaws.com"
     DATABASE_NAME = "eicu_demo"
     USERNAME = "admin"
-    PASSWORD = "jXGiWT5FqVTyMQHXa74c"
+    PASSWORD = "CB5T1Nc2xvN6WPl6GBg3"
     s = SqlClient(SERVER_NAME, DATABASE_NAME, USERNAME, PASSWORD)
     df = s.select('diagnosis', select="*")
     print(df)
