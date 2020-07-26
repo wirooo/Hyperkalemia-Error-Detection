@@ -57,15 +57,15 @@ def padding_icd9(df, column):
     """
     Padding ICD9 codes to 3 digits left of decimal and 2 right of decimal
     """
-    df['ICD9'] = df['ICD9'].apply(lambda x: decimal_format(x))
+    df[column] = df[column].apply(decimal_format)
     return df
 
 if __name__ == '__main__':
-    # SERVER_NAME = "teamseven.ct4lx0aqwcg9.ca-central-1.rds.amazonaws.com"
-    # DATABASE_NAME = "eicu_demo"
-    # USERNAME = "admin"
-    # PASSWORD = "jXGiWT5FqVTyMQHXa74c"
-    # s = SqlClient(SERVER_NAME, DATABASE_NAME, USERNAME, PASSWORD)
+    SERVER_NAME = "teamseven.ct4lx0aqwcg9.ca-central-1.rds.amazonaws.com"
+    DATABASE_NAME = "eicu_demo"
+    USERNAME = "admin"
+    PASSWORD = "CB5T1Nc2xvN6WPl6GBg3"
+    s = SqlClient(SERVER_NAME, DATABASE_NAME, USERNAME, PASSWORD)
     # df = s.select('diagnosis', select="patientunitstayid, icd9code, diagnosispriority")
     # print(df)
     # squashed = aggregate_common_rows(df,
@@ -76,5 +76,6 @@ if __name__ == '__main__':
     # print(squashed)
 
     df = pd.read_csv("diagnosis_hyperkalemia.csv")
-    out = padding_icd9(df, 'ICD9')
-    print(out)
+    formatted = padding_icd9(df, 'ICD9')
+    print(formatted)
+    s.upload_df(formatted, "diagnosis_hyperkalemia");
