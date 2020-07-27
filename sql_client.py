@@ -112,5 +112,4 @@ if __name__ == '__main__':
     USERNAME = "admin"
     PASSWORD = "CB5T1Nc2xvN6WPl6GBg3"
     s = SqlClient(SERVER_NAME, DATABASE_NAME, USERNAME, PASSWORD)
-    df = s.select_join("diagnosis", "lab", "inner", "diagnosis.patientunitstayid = lab.patientunitstayid")
-    print(df)
+    s.select('diagnosis_relevant_hyperkalemia').to_csv('diagnosis_relevant_hyperkalemia.csv')

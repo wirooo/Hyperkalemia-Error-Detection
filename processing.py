@@ -46,17 +46,37 @@ def match_icd9codes():
     return df[['ic9', 'ic10']].set_index('ic9').join(codes[['dx_code', 'long_desc']].set_index('dx_code'), how='inner').drop_duplicates()
 
 
+def decimal_format(x):
+    try:
+        return '{:.2f}'.format(float(x)).zfill(6)
+    except:
+        return x
+
+
+def padding_icd9(df, column):
+    """
+    Padding ICD9 codes to 3 digits left of decimal and 2 right of decimal
+    """
+    df['icd9'] = df['icd9'].apply(lambda x: decimal_format(x))
+    return df
+
 if __name__ == '__main__':
-    SERVER_NAME = "teamseven.ct4lx0aqwcg9.ca-central-1.rds.amazonaws.com"
-    DATABASE_NAME = "eicu_demo"
-    USERNAME = "admin"
-    PASSWORD = "jXGiWT5FqVTyMQHXa74c"
-    s = SqlClient(SERVER_NAME, DATABASE_NAME, USERNAME, PASSWORD)
-    df = s.select('diagnosis', select="patientunitstayid, icd9code, diagnosispriority")
-    print(df)
-    squashed = aggregate_common_rows(df,
-                                     'patientunitstayid',
-                                     {'icd9code': lambda d: ';'.join(d),
-                                      'diagnosispriority': lambda d: '-'.join(d)},
-                                     {'icd9code': "No Code"})
-    print(squashed)
+    # SERVER_NAME = "teamseven.ct4lx0aqwcg9.ca-central-1.rds.amazonaws.com"
+    # DATABASE_NAME = "eicu_demo"
+    # USERNAME = "admin"
+    # PASSWORD = "jXGiWT5FqVTyMQHXa74c"
+    # s = SqlClient(SERVER_NAME, DATABASE_NAME, USERNAME, PASSWORD)
+    # df = s.select('diagnosis', select="patientunitstayid, icd9code, diagnosispriority")
+    # print(df)
+    # squashed = aggregate_common_rows(df,
+    #                                  'patientunitstayid',
+    #                                  {'icd9code': lambda d: ';'.join(d),
+    #                                   'diagnosispriority': lambda d: '-'.join(d)},
+    #                                  {'icd9code': "No Code"})
+    # print(squashed)
+
+    df = pd.read_csv("diagnosis_splitICD.csv")
+    df.dropna(axis=0, inplace=True, how='any')
+    out = padding_icd9(df, 'icd9')
+    out[['diagnosisid', 'patientunitstayid', 'icd9']].to_csv('diagnosis_padded.csv')
+
