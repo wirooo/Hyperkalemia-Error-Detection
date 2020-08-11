@@ -105,11 +105,3 @@ class SqlClient:
         return pd.read_sql(f"select top 2000 {select} from {table1} {join_type} join {table2} on {on}"
                            f" {'' if not where else f'where {where}'}", self.engine)
 
-
-if __name__ == '__main__':
-    SERVER_NAME = "teamseven.ct4lx0aqwcg9.ca-central-1.rds.amazonaws.com"
-    DATABASE_NAME = "eicu_demo"
-    USERNAME = "admin"
-    PASSWORD = "CB5T1Nc2xvN6WPl6GBg3"
-    s = SqlClient(SERVER_NAME, DATABASE_NAME, USERNAME, PASSWORD)
-    s.select('diagnosis_relevant_hyperkalemia').to_csv('diagnosis_relevant_hyperkalemia.csv')
