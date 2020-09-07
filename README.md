@@ -1,4 +1,4 @@
-# bwest
+# Hyperkalemia Error Detection
 
 ## Setup
 1. Install virtualenv on your machine
